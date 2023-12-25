@@ -1,0 +1,39 @@
+     1                                  section .data
+     2                                  
+     3                                  section .text
+     4                                  global _start
+     5                                  
+     6                                  _start:
+     7                                      ; Load the 16-bit numbers into AX and BX registers
+     8 00000000 B83412                      mov ax, 1234h     ; Replace 1234h with your first 16-bit number
+     9 00000003 BB7856                      mov bx, 5678h     ; Replace 5678h with your second 16-bit number
+    10                                  
+    11                                      ; Initialize result registers
+    12 00000006 31D2                        xor dx, dx        ; Clear the high 16 bits of the result (DX)
+    13                                  
+    14                                      ; Multiply AX and BX using rotational shift
+    15 00000008 B91000                      mov cx, 16        ; Set loop counter to 16 for 16-bit multiplication
+    16                                  multiply_loop:
+    17 0000000B D1E0                        shl ax, 1         ; Shift left AX by 1 bit (multiply by 2)
+    18 0000000D D1D2                        rcl dx, 1         ; Rotate carry flag into the low bit of DX
+    19 0000000F D1D3                        rcl bx, 1         ; Rotate carry flag into the low bit of BX
+    20                                  
+    21                                      ; Check the least significant bit of the original AX
+    22 00000011 A90100                      test ax, 1
+    23 00000014 7402                        jz no_addition    ; If the bit is zero, skip addition
+    24                                  
+    25                                      ; Add the original BX to the result
+    26 00000016 01DA                        add dx, bx
+    27                                  
+    28                                  no_addition:
+    29 00000018 E2F1                        loop multiply_loop ; Repeat the loop until the counter is zero
+    30                                  
+    31                                      ; The result is now in DX:AX
+    32                                      ; DX contains the high 16 bits, and AX contains the low 16 bits
+    33                                  
+    34                                      ; You can now use the result as needed
+    35                                  
+    36                                      ; Exit the program
+    37 0000001A B8004C                      mov ax, 0x4c00    ; Exit code 0
+    38 0000001D CD80                        int 0x80           ; Call kernel
+    39                                  

@@ -1,0 +1,30 @@
+section .data
+    ; Define your 16-bit numbers
+    num1 dw 1234  ; Replace with your first 16-bit number
+    num2 dw 5678  ; Replace with your second 16-bit number
+
+section .text
+    global _start
+
+_start:
+    ; Load the numbers into registers
+    mov ax, [num1]   ; Load the first 16-bit number into AX
+    mov bx, [num2]   ; Load the second 16-bit number into BX
+
+    ; Perform the multiplication
+    imul ax, bx      ; Signed multiplication, result in AX
+
+    ; Display the result (32-bit)
+    ; You can choose to store or display the result in your desired format
+    ; For simplicity, we will display it as a 32-bit hexadecimal number
+    mov ecx, eax     ; Copy the result to ECX for display
+    mov eax, 4       ; System call number for sys_write
+    mov ebx, 1       ; File descriptor 1 is stdout
+    mov edx, 8       ; Number of bytes to write (32-bit hexadecimal number)
+    lea esi, [ecx]   ; Load effective address of the result into ESI
+    int 0x80         ; Perform system call
+
+    ; Exit the program
+    mov eax, 1       ; System call number for sys_exit
+    xor ebx, ebx     ; Exit code 0
+    int 0x80         ; Perform system call
